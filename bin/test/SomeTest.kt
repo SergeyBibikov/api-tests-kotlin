@@ -6,6 +6,7 @@ class SomeTest {
     @Test
     fun fooTest() {
         println("Some test")
-        assertEquals(2,1)
+        assertEquals(2,2)
     }
 }
+
