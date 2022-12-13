@@ -1,5 +1,6 @@
-package com.example.sergeybibikov.kotlin.tests
+package com.example.sergeybibikov.kotlin.api_tests
 
+import com.google.gson.annotations.SerializedName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import retrofit2.Call
@@ -7,6 +8,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
+
+interface Ready {
+    @GET("/ready") fun heyReady(): Call<ReadyAnswer>
+}
+
+data class ReadyAnswer(@SerializedName("status") val status: String)
 
 class ReadinessTest {
 
@@ -21,8 +28,4 @@ class ReadinessTest {
         val respBody = request.heyReady().execute().body()
         assertEquals("ready", respBody?.status)
     }
-}
-
-interface Ready {
-    @GET("/ready") fun heyReady(): Call<ReadyAnswer>
 }
