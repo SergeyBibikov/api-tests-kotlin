@@ -1,31 +1,30 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
-import com.google.gson.annotations.SerializedName
+
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.TestInstance
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-import retrofit2.http.GET
 
-interface Ready {
-    @GET("/ready") fun heyReady(): Call<ReadyAnswer>
-}
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class ReadyTest {
+    @BeforeAll
+    fun healthCheck(){
+        Helpers.waitTillServiceIsUp(30)
+    }
+    @Test
+    fun `The message in body should equal ready`() {
+        val respBody = ApiClient.ready().body()
 
-data class ReadyAnswer(@SerializedName("status") val status: String)
+        assertEquals("ready", respBody?.status)
 
-class ReadinessTest {
+    }
 
     @Test
-    fun serviceIsReadyTest() {
-        val request =
-                Retrofit.Builder()
-                        .baseUrl("http://localhost:8080")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build()
-                        .create(Ready::class.java)
-        val respBody = request.heyReady().execute().body()
-        assertEquals("ready", respBody?.status)
+    fun `The status code should equal 200`() {
+        val response = ApiClient.ready()
+
+        assertEquals(200, response.code())
     }
+
 }
