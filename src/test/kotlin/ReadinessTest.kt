@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 class ReadyTest {
     @BeforeAll
     fun healthCheck(){
-        Helpers.waitTillServiceIsUp(30)
+        waitTillServiceIsUp(30)
     }
     @Test
     fun `The message in body should equal ready`() {

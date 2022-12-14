@@ -1,24 +1,31 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
+import com.google.gson.Gson
 import java.net.ConnectException
 import kotlin.test.fail
 
-class Helpers {
-    companion object{
-        fun waitTillServiceIsUp(secsToWait: Int) {
-            val iterations = secsToWait * 2
-            for (i in 0..iterations){
-                try {
-                    ApiClient.ready()
-                } catch (e: Exception) {
-                    if (e is ConnectException) {
-                        Thread.sleep(500L)
-                        continue
-                    }
-                }
-                return
+/**
+ * Waits for the service to start,
+ * checks every 500 ms
+ */
+fun waitTillServiceIsUp(secsToWait: Int) {
+    val iterations = secsToWait * 2
+    for (i in 0..iterations) {
+        try {
+            ApiClient.ready()
+        } catch (e: Exception) {
+            if (e is ConnectException) {
+                Thread.sleep(500L)
+                continue
             }
-            fail("The service it not up after $secsToWait seconds")
         }
+        return
     }
+    fail("The service it not up after $secsToWait seconds")
+}
+
+fun getResponseErrorMessage(errorBodyString: String?): String {
+    val g = Gson()
+    val erObj = g.fromJson(errorBodyString, ApiError::class.java)
+    return erObj.err
 }
