@@ -12,7 +12,7 @@ class RegistrationTest {
     fun healthCheck() {
         waitTillServiceIsUp(30)
     }
-    
+
     @Test
     fun `Successful registration`() {
         val username = getRandomString(7)
@@ -20,9 +20,13 @@ class RegistrationTest {
         val email = getRandomString(7, false) + "@gmail.com"
 
         val response = ApiClient.register(username, password, email)
-
+        val respBody = response.body()
+        val receivedUserId = respBody?.userId
+        val createdUser = DBClient().getUserByUsername(username)
+        
         assertEquals(201, response.code())
-        assertEquals("user created", response.body()?.message)
+        assertEquals("user created", respBody?.message)
+        assertEquals(createdUser.id, receivedUserId)
     }
 
     @Test
