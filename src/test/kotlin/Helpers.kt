@@ -29,3 +29,13 @@ fun getResponseErrorMessage(errorBodyString: String?): String {
     val erObj = g.fromJson(errorBodyString, ApiError::class.java)
     return erObj.err
 }
+
+fun getRandomString(stringLen: Int, lettersOnly: Boolean = true): String {
+    var chars = ('a'..'z') + ('A'..'Z')
+    if (!lettersOnly) chars += ('0'..'9')
+    var resultString = ""
+    for (i in 1..stringLen){
+        resultString += chars.random()
+    }
+    return resultString
+}
