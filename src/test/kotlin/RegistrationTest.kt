@@ -1,9 +1,6 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -23,25 +20,44 @@ class RegistrationTest {
         val respBody = response.body()
         val receivedUserId = respBody?.userId
         val createdUser = DBClient().getUserByUsername(username)
-        
+
         assertEquals(201, response.code())
         assertEquals("user created", respBody?.message)
         assertEquals(createdUser.id, receivedUserId)
     }
 
-    @Test
-    fun `Expecting fail as the password has no uppercase letters`() {
+    @TestFactory
+    fun invalidPasswords(): List<DynamicTest> {
         val username = getRandomString(7)
         val email = getRandomString(7, false) + "@gmail.com"
+        val dt: MutableList<DynamicTest> = mutableListOf()
 
-        val response = ApiClient.register(username, "234ff3453535", email)
-        val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
+        data class Tc(val testName: String, val password: String, val expectedMessage: String)
 
-        val expectedMessage = "The password must contain uppercase and lowercase letters"
-        assertAll(
-            { assertEquals(400, response.code()) },
-            { assertEquals(expectedMessage, errorMessage) },
-        )
+        listOf(
+            Tc(
+                "Should get 400 if no uppercase letters in password",
+                "asdfasdffdsdfsf",
+                "The password must contain uppercase and lowercase letters"
+            ),
+            Tc(
+                "Should get 400 if less then 8 chars in password",
+                "add",
+                "The password must be at least 8 characters long"
+            )
+        ).map {
+            dt.add(DynamicTest.dynamicTest(it.testName) {
+                val response = ApiClient.register(username, it.password, email)
+                val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
+
+                assertAll(
+                    { assertEquals(400, response.code()) },
+                    { assertEquals(it.expectedMessage, errorMessage) },
+                )
+            })
+        }
+
+        return dt
     }
 
 }
