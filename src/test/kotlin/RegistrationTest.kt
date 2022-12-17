@@ -13,7 +13,7 @@ class RegistrationTest {
     @Test
     fun `Successful registration`() {
         val username = getRandomString(7)
-        val password = "A" + getRandomString(8, false)
+        val password = "A" + getRandomString(8, false) + "5"
         val email = getRandomString(7, false) + "@gmail.com"
 
         val response = ApiClient.register(username, password, email)
@@ -34,18 +34,25 @@ class RegistrationTest {
 
         data class Tc(val testName: String, val password: String, val expectedMessage: String)
 
+        val charsCheckMessage = "The password must contain uppercase, lowercase letters and at least one number"
         listOf(
             Tc(
-                "Should get 400 if no uppercase letters in password",
-                "asdfasdffdsdfsf",
-                "The password must contain uppercase and lowercase letters"
+                "Should get 400 if less then 8 chars in password",
+                "a4dd",
+                "The password must be at least 8 characters long"
             ),
             Tc(
-                "Should get 400 if less then 8 chars in password",
-                "add",
-                "The password must be at least 8 characters long"
-            )
-        ).map {
+                "Should get 400 if no uppercase letters in password",
+                "4asdfasdffdsdfsf",
+                charsCheckMessage
+            ),
+            Tc(
+                "Should get 400 if no numbers in password",
+                "Asdfasdffdsdfsf",
+                charsCheckMessage
+            ),
+
+            ).map {
             dt.add(DynamicTest.dynamicTest(it.testName) {
                 val response = ApiClient.register(username, it.password, email)
                 val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
