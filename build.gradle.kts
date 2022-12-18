@@ -1,6 +1,10 @@
-plugins { kotlin("jvm") version "1.7.20" }
+plugins {
+    kotlin("jvm") version "1.7.20"
+    id("io.qameta.allure") version "2.11.2"
+}
 
 repositories { mavenCentral() }
+
 
 dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
