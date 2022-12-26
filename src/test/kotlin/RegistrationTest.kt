@@ -9,6 +9,7 @@ import kotlin.test.assertEquals
 
 @DisplayName("Registration endpoint tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Execution(ExecutionMode.CONCURRENT)
 class RegistrationTest {
     @BeforeAll
     fun healthCheck() {
@@ -33,48 +34,46 @@ class RegistrationTest {
         assertEquals(createdUser.id, receivedUserId)
     }
 
-    //TODO: split into separate tests to use tags
-    @TestFactory
-    @Execution(ExecutionMode.CONCURRENT)
-    @Feature("New user registration")
-    fun invalidPasswords(): List<DynamicTest> {
-        val username = getRandomString(7)
-        val email = getRandomString(7, false) + "@gmail.com"
-        val dt: MutableList<DynamicTest> = mutableListOf()
+    private val passwordErrorMessage = "The password must contain uppercase, lowercase letters and at least one number"
+    private val testUserName = getRandomString(7)
+    private val testEmail = getRandomString(7, false) + "@gmail.com"
 
-        data class Tc(val testName: String, val password: String, val expectedMessage: String)
+    private fun runT(
+        username: String = testUserName,
+        pass: String,
+        email: String = testEmail,
+        errMes: String = passwordErrorMessage
+    ) {
+        val response = ApiClient.register(username, pass, email)
+        val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
-        val charsCheckMessage = "The password must contain uppercase, lowercase letters and at least one number"
-        listOf(
-            Tc(
-                "Should get 400 if less then 8 chars in password",
-                "a4dd",
-                "The password must be at least 8 characters long"
-            ),
-            Tc(
-                "Should get 400 if no uppercase letters in password",
-                "4asdfasdffdsdfsf",
-                charsCheckMessage
-            ),
-            Tc(
-                "Should get 400 if no numbers in password",
-                "Asdfasdffdsdfsf",
-                charsCheckMessage
-            ),
-
-            ).map {
-            dt.add(DynamicTest.dynamicTest(it.testName) {
-                val response = ApiClient.register(username, it.password, email)
-                val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
-
-                assertAll(
-                    { assertEquals(400, response.code()) },
-                    { assertEquals(it.expectedMessage, errorMessage) },
-                )
-            })
-        }
-
-        return dt
+        assertAll(
+            { assertEquals(400, response.code()) },
+            { assertEquals(errMes, errorMessage) },
+        )
     }
 
+    @Test
+    @Feature("New user registration")
+    @Tag("Negative")
+    fun `Should get 400 if less then 8 chars in password `() {
+        val testPass = "a4dd"
+        runT(pass = testPass, errMes = "The password must be at least 8 characters long")
+    }
+
+    @Test
+    @Feature("New user registration")
+    @Tag("Negative")
+    fun `Should get 400 if no uppercase letters in password`() {
+        val testPass = "4asdfasdffdsdfsf"
+        runT(pass = testPass)
+    }
+
+    @Test
+    @Feature("New user registration")
+    @Tag("Negative")
+    fun `Should get 400 if no numbers in password`() {
+        val testPass = "Asdfasdffdsdfsf"
+        runT(pass = testPass)
+    }
 }
