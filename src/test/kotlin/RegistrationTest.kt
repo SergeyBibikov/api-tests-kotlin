@@ -2,10 +2,10 @@ package com.example.sergeybibikov.kotlin.api_tests
 
 
 import io.qameta.allure.Feature
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
-import kotlin.test.assertEquals
 
 @DisplayName("Registration endpoint tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -28,10 +28,9 @@ class RegistrationTest {
         val respBody = response.body()
         val receivedUserId = respBody?.userId
         val createdUser = DBClient().getUserByUsername(username)
-
-        assertEquals(201, response.code())
-        assertEquals("user created", respBody?.message)
-        assertEquals(createdUser.id, receivedUserId)
+        assertThat(response.code()).isEqualTo(201)
+        assertThat(respBody?.message).isEqualTo("user created")
+        assertThat(receivedUserId).isEqualTo(createdUser.id)
     }
 
     private val passwordErrorMessage = "The password must contain uppercase, lowercase letters and at least one number"
@@ -48,8 +47,8 @@ class RegistrationTest {
         val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
         assertAll(
-            { assertEquals(400, response.code()) },
-            { assertEquals(errMes, errorMessage) },
+            { assertThat(response.code()).isEqualTo(400) },
+            { assertThat(errorMessage).isEqualTo(errMes) },
         )
     }
 
