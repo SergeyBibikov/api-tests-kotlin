@@ -12,6 +12,9 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.1")
 
     testImplementation(kotlin("test"))
+    testImplementation("org.assertj:assertj-core:3.23.1")
+    testImplementation("io.qameta.allure:allure-assertj:2.20.1")
+    testImplementation("io.qameta.allure:allure-junit5:2.20.1")
 }
 
 tasks.test { useJUnitPlatform() }
