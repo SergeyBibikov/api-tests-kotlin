@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Registration endpoint tests")
@@ -35,50 +36,30 @@ class RegistrationTest {
         assertThat(receivedUserId).isEqualTo(createdUser.id)
     }
 
-    private val passwordErrorMessage = "The password must contain uppercase, lowercase letters and at least one number"
     private val validUserName = getRandomString(7)
     private val validEmail = getRandomString(7, false) + "@gmail.com"
-    private val validPassword = "Afdfd434fF"
 
-    private fun runT(
-        username: String = validUserName,
-        pass: String,
-        email: String = validEmail,
-        errMes: String = passwordErrorMessage
-    ) {
-        val response = ApiClient.register(username, pass, email)
+    @Feature("New user registration")
+    @Tag("Negative")
+    @DisplayName("Should get 400 if password ")
+    @ParameterizedTest(name = "{1}")
+    @CsvSource(
+        "a4dd, is shorter then 8 chars, The password must be at least 8 characters long",
+        "4asdfasdffdsdfsf, has no uppercase letters, default",
+        "Asdfasdffdsdfsf, has no numbers, default"
+    )
+    fun invalidPassword(password: String, _ignore: String, message: String) {
+        var expectedMessage = "The password must contain uppercase, lowercase letters and at least one number"
+        if (message != "default") expectedMessage = message
+
+        val response = ApiClient.register(validUserName, password, validEmail)
         val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
         assertAll(
             { assertThat(response.code()).isEqualTo(400) },
-            { assertThat(errorMessage).isEqualTo(errMes) },
+            { assertThat(errorMessage).isEqualTo(expectedMessage) },
         )
     }
-
-    @Test
-    @Feature("New user registration")
-    @Tag("Negative")
-    fun `Should get 400 if less then 8 chars in password `() {
-        val testPass = "a4dd"
-        runT(pass = testPass, errMes = "The password must be at least 8 characters long")
-    }
-
-    @Test
-    @Feature("New user registration")
-    @Tag("Negative")
-    fun `Should get 400 if no uppercase letters in password`() {
-        val testPass = "4asdfasdffdsdfsf"
-        runT(pass = testPass)
-    }
-
-    @Test
-    @Feature("New user registration")
-    @Tag("Negative")
-    fun `Should get 400 if no numbers in password`() {
-        val testPass = "Asdfasdffdsdfsf"
-        runT(pass = testPass)
-    }
-
 
     @Feature("New user registration")
     @Tag("Negative")
@@ -87,12 +68,15 @@ class RegistrationTest {
     @ValueSource(strings = ["email", "password", "username"])
     fun missingReqBodyField(missingField: String) {
         val expectedMessage = "Username, password and email are required"
+        val validPassword = "Afdfd434fF"
+
         val resp = when (missingField) {
             "email" -> ApiClient.register(validUserName, validPassword, null)
             "username" -> ApiClient.register(null, validPassword, validEmail)
             else -> ApiClient.register(validUserName, null, validEmail)
         }
         val err = getResponseErrorMessage(resp.errorBody()?.string())
+
         assertThat(err).isEqualTo(expectedMessage)
     }
 }
