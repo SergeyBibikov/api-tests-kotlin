@@ -12,7 +12,7 @@ class ApiClient {
         }
 
         @Step("Send POST request to /registration")
-        fun register(username: String? = null, password: String?, email: String?)
+        fun register(username: String?, password: String?, email: String?)
                 : Response<RegisterResponseBody> {
             return getBuiltClient(Register::class.java)
                 .register(RegisterRequestBody(username, password, email))

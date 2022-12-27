@@ -6,6 +6,8 @@ import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Registration endpoint tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -34,13 +36,14 @@ class RegistrationTest {
     }
 
     private val passwordErrorMessage = "The password must contain uppercase, lowercase letters and at least one number"
-    private val testUserName = getRandomString(7)
-    private val testEmail = getRandomString(7, false) + "@gmail.com"
+    private val validUserName = getRandomString(7)
+    private val validEmail = getRandomString(7, false) + "@gmail.com"
+    private val validPassword = "Afdfd434fF"
 
     private fun runT(
-        username: String = testUserName,
+        username: String = validUserName,
         pass: String,
-        email: String = testEmail,
+        email: String = validEmail,
         errMes: String = passwordErrorMessage
     ) {
         val response = ApiClient.register(username, pass, email)
@@ -74,5 +77,22 @@ class RegistrationTest {
     fun `Should get 400 if no numbers in password`() {
         val testPass = "Asdfasdffdsdfsf"
         runT(pass = testPass)
+    }
+
+
+    @Feature("New user registration")
+    @Tag("Negative")
+    @DisplayName("Should get 400 if ")
+    @ParameterizedTest(name = "no {0} in req body")
+    @ValueSource(strings = ["email", "password", "username"])
+    fun missingReqBodyField(missingField: String) {
+        val expectedMessage = "Username, password and email are required"
+        val resp = when (missingField) {
+            "email" -> ApiClient.register(validUserName, validPassword, null)
+            "username" -> ApiClient.register(null, validPassword, validEmail)
+            else -> ApiClient.register(validUserName, null, validEmail)
+        }
+        val err = getResponseErrorMessage(resp.errorBody()?.string())
+        assertThat(err).isEqualTo(expectedMessage)
     }
 }
