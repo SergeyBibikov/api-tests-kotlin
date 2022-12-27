@@ -20,6 +20,7 @@ class RegistrationTest {
     }
 
     @Test
+    @DisplayName("Successful registration")
     @Feature("New user registration")
     @Tag("Positive")
     fun `Successful registration`() {
