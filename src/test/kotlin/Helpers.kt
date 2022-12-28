@@ -34,8 +34,21 @@ fun getRandomString(stringLen: Int, lettersOnly: Boolean = true): String {
     var chars = ('a'..'z') + ('A'..'Z')
     if (!lettersOnly) chars += ('0'..'9')
     var resultString = ""
-    for (i in 1..stringLen){
+    for (i in 1..stringLen) {
         resultString += chars.random()
     }
     return resultString
+}
+
+data class ValidRegData(
+    val username: String,
+    val password: String,
+    val email: String
+)
+
+fun getValidRegData(): ValidRegData {
+    val un = getRandomString(7)
+    val em = getRandomString(7, false) + "@gmail.com"
+    val p = "A" + getRandomString(8, false) + "5"
+    return ValidRegData(un, p, em)
 }

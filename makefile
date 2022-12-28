@@ -4,3 +4,6 @@ test:
 
 serve:
 	-./gradlew allureServe
+
+clean:
+	-./gradlew clean

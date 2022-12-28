@@ -37,8 +37,23 @@ class RegistrationTest {
         assertThat(receivedUserId).isEqualTo(createdUser.id)
     }
 
-    private val validUserName = getRandomString(7)
-    private val validEmail = getRandomString(7, false) + "@gmail.com"
+    @Feature("New user registration")
+    @Tag("Negative")
+    @DisplayName("Should get 400 if ")
+    @ParameterizedTest(name = "no {0} in req body")
+    @ValueSource(strings = ["email", "password", "username"])
+    fun missingReqBodyField(missingField: String) {
+        val expectedMessage = "Username, password and email are required"
+        val (validUserName, validPassword, validEmail) = getValidRegData()
+        val resp = when (missingField) {
+            "email" -> ApiClient.register(validUserName, validPassword, null)
+            "username" -> ApiClient.register(null, validPassword, validEmail)
+            else -> ApiClient.register(validUserName, null, validEmail)
+        }
+        val err = getResponseErrorMessage(resp.errorBody()?.string())
+
+        assertThat(err).isEqualTo(expectedMessage)
+    }
 
     @Feature("New user registration")
     @Tag("Negative")
@@ -53,6 +68,8 @@ class RegistrationTest {
         var expectedMessage = "The password must contain uppercase, lowercase letters and at least one number"
         if (message != "default") expectedMessage = message
 
+        val (validUserName, _, validEmail) = getValidRegData()
+
         val response = ApiClient.register(validUserName, password, validEmail)
         val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
@@ -62,22 +79,27 @@ class RegistrationTest {
         )
     }
 
+    //TODO: add more tests on email prefix format
     @Feature("New user registration")
     @Tag("Negative")
-    @DisplayName("Should get 400 if ")
-    @ParameterizedTest(name = "no {0} in req body")
-    @ValueSource(strings = ["email", "password", "username"])
-    fun missingReqBodyField(missingField: String) {
-        val expectedMessage = "Username, password and email are required"
-        val validPassword = "Afdfd434fF"
+    @DisplayName("Should get 400 if email ")
+    @ParameterizedTest(name = "{1}")
+    @CsvSource(
+        "mike234gmail.com, does not have @ sign",
+        ".abc@mail.com, starts with a dot",
+        "abc..def@mail.com, prefix has several dots in a row",
+        "abc.@mail.com, prefix ends with a dot"
+    )
+    fun invalidEmail(email: String, _ignore: String) {
+        val expectedMessage = "The email has an invalid format"
 
-        val resp = when (missingField) {
-            "email" -> ApiClient.register(validUserName, validPassword, null)
-            "username" -> ApiClient.register(null, validPassword, validEmail)
-            else -> ApiClient.register(validUserName, null, validEmail)
-        }
-        val err = getResponseErrorMessage(resp.errorBody()?.string())
+        val (validUserName, validPassword, _) = getValidRegData()
+        val response = ApiClient.register(validUserName, validPassword, email)
+        val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
-        assertThat(err).isEqualTo(expectedMessage)
+        assertAll(
+            { assertThat(response.code()).isEqualTo(400) },
+            { assertThat(errorMessage).isEqualTo(expectedMessage) },
+        )
     }
 }
