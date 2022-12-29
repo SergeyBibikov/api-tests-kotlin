@@ -8,6 +8,7 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Registration endpoint tests")
@@ -84,12 +85,7 @@ class RegistrationTest {
     @Tag("Negative")
     @DisplayName("Should get 400 if email ")
     @ParameterizedTest(name = "{1}")
-    @CsvSource(
-        "mike234gmail.com, does not have @ sign",
-        ".abc@mail.com, starts with a dot",
-        "abc..def@mail.com, prefix has several dots in a row",
-        "abc.@mail.com, prefix ends with a dot"
-    )
+    @MethodSource("$TEST_DATA_CLASSNAME#invalidEmailsData")
     fun invalidEmail(email: String, _ignore: String) {
         val expectedMessage = "The email has an invalid format"
 
