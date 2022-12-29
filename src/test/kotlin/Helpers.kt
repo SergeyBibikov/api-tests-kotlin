@@ -40,15 +40,6 @@ fun getRandomString(stringLen: Int, lettersOnly: Boolean = true): String {
     return resultString
 }
 
-data class ValidRegData(
-    val username: String,
-    val password: String,
-    val email: String
-)
-
-fun getValidRegData(): ValidRegData {
-    val un = getRandomString(7)
-    val em = getRandomString(7, false) + "@gmail.com"
-    val p = "A" + getRandomString(8, false) + "5"
-    return ValidRegData(un, p, em)
-}
+fun getValidEmail() = getRandomString(7, false) + "@gmail.com"
+fun getValidPassword() = "A" + getRandomString(8, false) + "5"
+fun getValidUsername() = getRandomString(7)

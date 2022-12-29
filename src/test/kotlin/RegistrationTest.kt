@@ -2,14 +2,13 @@ package com.example.sergeybibikov.kotlin.api_tests
 
 
 import io.qameta.allure.Feature
+import io.qameta.allure.Story
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
-import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Registration endpoint tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -20,14 +19,15 @@ class RegistrationTest {
         waitTillServiceIsUp(30)
     }
 
-    @Test
-    @DisplayName("Successful registration")
     @Feature("New user registration")
+    @Story("Successful registration")
     @Tag("Positive")
-    fun `Successful registration`() {
+    @DisplayName("Registration with email = ")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("$TEST_DATA_CLASSNAME#successfulRegData")
+    fun `Successful registration`(email: String) {
         val username = getRandomString(7)
         val password = "A" + getRandomString(8, false) + "5"
-        val email = getRandomString(7, false) + "@gmail.com"
 
         val response = ApiClient.register(username, password, email)
         val respBody = response.body()
@@ -40,38 +40,29 @@ class RegistrationTest {
 
     @Feature("New user registration")
     @Tag("Negative")
+    @Story("Missing registration request body fields")
     @DisplayName("Should get 400 if ")
-    @ParameterizedTest(name = "no {0} in req body")
-    @ValueSource(strings = ["email", "password", "username"])
-    fun missingReqBodyField(missingField: String) {
+    @ParameterizedTest(name = "{3}")
+    @MethodSource("$TEST_DATA_CLASSNAME#missingFieldsData")
+    fun missingReqBodyField(username: String?, password: String?, email: String?, testName: String) {
         val expectedMessage = "Username, password and email are required"
-        val (validUserName, validPassword, validEmail) = getValidRegData()
-        val resp = when (missingField) {
-            "email" -> ApiClient.register(validUserName, validPassword, null)
-            "username" -> ApiClient.register(null, validPassword, validEmail)
-            else -> ApiClient.register(validUserName, null, validEmail)
-        }
+        val resp = ApiClient.register(username, password, email)
         val err = getResponseErrorMessage(resp.errorBody()?.string())
 
         assertThat(err).isEqualTo(expectedMessage)
     }
 
     @Feature("New user registration")
+    @Story("Invalid password in the reg. request body")
     @Tag("Negative")
     @DisplayName("Should get 400 if password ")
     @ParameterizedTest(name = "{1}")
-    @CsvSource(
-        "a4dd, is shorter then 8 chars, The password must be at least 8 characters long",
-        "4asdfasdffdsdfsf, has no uppercase letters, default",
-        "Asdfasdffdsdfsf, has no numbers, default"
-    )
+    @MethodSource("$TEST_DATA_CLASSNAME#invalidPasswordData")
     fun invalidPassword(password: String, _ignore: String, message: String) {
         var expectedMessage = "The password must contain uppercase, lowercase letters and at least one number"
         if (message != "default") expectedMessage = message
 
-        val (validUserName, _, validEmail) = getValidRegData()
-
-        val response = ApiClient.register(validUserName, password, validEmail)
+        val response = ApiClient.register(getValidUsername(), password, getValidEmail())
         val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
         assertAll(
@@ -80,8 +71,8 @@ class RegistrationTest {
         )
     }
 
-    //TODO: add more tests on email prefix format
     @Feature("New user registration")
+    @Story("Invalid email in the reg. request body")
     @Tag("Negative")
     @DisplayName("Should get 400 if email ")
     @ParameterizedTest(name = "{1}")
@@ -89,8 +80,7 @@ class RegistrationTest {
     fun invalidEmail(email: String, _ignore: String) {
         val expectedMessage = "The email has an invalid format"
 
-        val (validUserName, validPassword, _) = getValidRegData()
-        val response = ApiClient.register(validUserName, validPassword, email)
+        val response = ApiClient.register(getValidUsername(), getValidPassword(), email)
         val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
         assertAll(
