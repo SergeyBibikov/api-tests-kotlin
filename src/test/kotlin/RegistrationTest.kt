@@ -30,10 +30,12 @@ class RegistrationTest {
         val password = "A" + getRandomString(8, false) + "5"
 
         val response = ApiClient.register(username, password, email)
+        assertThat(response.code()).isEqualTo(201)
+
         val respBody = response.body()
         val receivedUserId = respBody?.userId
         val createdUser = DBClient().getUserByUsername(username)
-        assertThat(response.code()).isEqualTo(201)
+        
         assertThat(respBody?.message).isEqualTo("user created")
         assertThat(receivedUserId).isEqualTo(createdUser.id)
     }

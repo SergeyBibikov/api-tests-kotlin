@@ -6,6 +6,8 @@ const val TEST_DATA_CLASSNAME = "com.example.sergeybibikov.kotlin.api_tests.Test
 fun successfulRegData(): Array<Arguments> {
     return arrayOf(
         Arguments.of("${getRandomString(4)}@gmail.co.uk"),
+        Arguments.of("${getRandomString(4)}@gmail.co.edu.uk"),
+        Arguments.of("${getRandomString(4)}@g-mail.co.uk"),
         Arguments.of("${getRandomString(4)}.test@gmail.com"),
         Arguments.of("${getRandomString(4)}-test@gmail.com"),
         Arguments.of("${getRandomString(4)}_test@gmail.com"),
@@ -16,6 +18,7 @@ fun successfulRegData(): Array<Arguments> {
 fun invalidEmailsData(): Array<Arguments> {
     return arrayOf(
         Arguments.of("mike234gmail.com", "does not have @ sign"),
+        Arguments.of("mikeу@gmail.com", "contains cyrillic letter"),
         Arguments.of(".abc@mail.com", "starts with a dot"),
         Arguments.of("_abc@mail.com", "starts with an underscore"),
         Arguments.of("-abc@mail.com", "starts with a dash"),
@@ -26,6 +29,12 @@ fun invalidEmailsData(): Array<Arguments> {
         Arguments.of("abc-@mail.com", "prefix ends with a dash"),
         Arguments.of("abc_@mail.com", "prefix ends with an underscore"),
         Arguments.of("a%bc@mail.com", "prefix has an invalid special character"),
+        Arguments.of("abc@mail.c", "domain has only one letter after dot"),
+        Arguments.of("abc@mail.comruu", "domain has 6 letters after dot"),
+        Arguments.of("abc@ma%il.com", "domain contains an invalid special character"),
+        Arguments.of("abc@mail..com", "domain has two dots in a row"),
+        Arguments.of("abc@ma_il.com", "domain has an underscore"),
+        Arguments.of("abc234124@mail.com.co.uk.some", "domain has 4 levels"),
     )
 }
 
