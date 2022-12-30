@@ -18,6 +18,19 @@ class ApiClient {
                 .register(RegisterRequestBody(username, password, email))
                 .execute()
         }
+
+        @Step("Send GET request to /teams")
+        fun getTeams(
+            name: String? = null,
+            conference: String? = null,
+            division: String? = null,
+            estYear: Int? = null
+        ): Response<Array<Team>> {
+            return getBuiltClient(Teams::class.java)
+                .get(name, conference, division, estYear)
+                .execute()
+        }
+
     }
 
 }
