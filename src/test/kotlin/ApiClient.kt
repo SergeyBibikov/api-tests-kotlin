@@ -1,5 +1,6 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
+import com.google.gson.annotations.SerializedName
 import io.qameta.allure.Step
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -42,3 +43,5 @@ fun <T> getBuiltClient(classToCreate: Class<T>): T {
         .build()
         .create(classToCreate)
 }
+
+data class ApiError(@SerializedName("error") val err: String)

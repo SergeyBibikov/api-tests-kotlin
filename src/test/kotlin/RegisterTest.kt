@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource
 @DisplayName("Registration endpoint tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.CONCURRENT)
-class RegistrationTest {
+class RegisterTest {
     @BeforeAll
     fun healthCheck() {
         waitTillServiceIsUp(30)
@@ -35,7 +35,7 @@ class RegistrationTest {
         val respBody = response.body()
         val receivedUserId = respBody?.userId
         val createdUser = DBClient().getUserByUsername(username)
-        
+
         assertThat(respBody?.message).isEqualTo("user created")
         assertThat(receivedUserId).isEqualTo(createdUser.id)
     }
