@@ -41,4 +41,18 @@ class TeamsTest {
             { assertThat(body?.size).isEqualTo(15) },
             { assertThat(body?.filter { it.conference != conf }).isEmpty() })
     }
+
+    @Test
+    @Feature("Getting teams list")
+    @Story("Filtering teams by conference")
+    @Tag("Negative")
+    @DisplayName("Should get 400 if the conference is not East or West")
+    fun invalidConference() {
+        val resp = ApiClient.getTeams(conference = "east")
+        val err = getResponseErrorMessage(resp.errorBody()?.string())
+        val expectedErrorMsg = "allowed conferences are: East, West"
+        assertAll(
+            { assertThat(resp.code()).isEqualTo(400) },
+            { assertThat(err).isEqualTo(expectedErrorMsg) })
+    }
 }

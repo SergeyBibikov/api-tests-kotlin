@@ -24,10 +24,12 @@ fun waitTillServiceIsUp(secsToWait: Int) {
     fail("The service it not up after $secsToWait seconds")
 }
 
-fun getResponseErrorMessage(errorBodyString: String?): String {
-    val g = Gson()
-    val erObj = g.fromJson(errorBodyString, ApiError::class.java)
-    return erObj.err
+fun getResponseErrorMessage(errorBodyString: String?): String? {
+    if (errorBodyString != null) {
+        val erObj = Gson().fromJson(errorBodyString, ApiError::class.java)
+        return erObj.err
+    }
+    return null
 }
 
 fun getRandomString(stringLen: Int, lettersOnly: Boolean = true): String {
