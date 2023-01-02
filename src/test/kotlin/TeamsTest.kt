@@ -1,12 +1,13 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
+import io.qameta.allure.Feature
+import io.qameta.allure.Story
 import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Teams endpoint tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -15,9 +16,29 @@ class TeamsTest {
     @BeforeAll
     fun healthCheck() = waitTillServiceIsUp(30)
 
+    @Feature("Getting teams list")
     @Test
+    @Tag("Positive")
+    @DisplayName("Should return all 30 teams if no params are provided")
     fun allTeams() {
         val resp = ApiClient.getTeams()
-        assertThat(resp.body()?.size).isEqualTo(30)
+        assertAll(
+            { assertThat(resp.code()).isEqualTo(200) },
+            { assertThat(resp.body()?.size).isEqualTo(30) })
+    }
+
+    @Feature("Getting teams list")
+    @Story("Filtering teams by conference")
+    @Tag("Positive")
+    @DisplayName("Should get only teams from conf:")
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = ["East", "West"])
+    fun getTeamsFromConference(conf: String) {
+        val resp = ApiClient.getTeams(conference = conf)
+        val body = resp.body()
+        assertAll(
+            { assertThat(resp.code()).isEqualTo(200) },
+            { assertThat(body?.size).isEqualTo(15) },
+            { assertThat(body?.filter { it.conference != conf }).isEmpty() })
     }
 }

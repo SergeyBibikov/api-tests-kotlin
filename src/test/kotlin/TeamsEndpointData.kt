@@ -1,20 +1,17 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
+import com.google.gson.annotations.SerializedName
 import retrofit2.Call
-import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface Ready {
-    @GET("/ready")
-    fun ready(): Call<ReadyResponseBody>
-}
-
-interface Register {
-    @POST("/register")
-    fun register(@Body body: RegisterRequestBody): Call<RegisterResponseBody>
-}
+data class Team(
+    val id: Int,
+    val name: String,
+    val conference: String,
+    val division: String,
+    @SerializedName("est_year") val estYear: Int
+)
 
 interface Teams {
     @GET("/teams")
