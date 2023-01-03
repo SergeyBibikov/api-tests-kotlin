@@ -57,3 +57,37 @@ fun missingFieldsData(): Array<Arguments> {
         Arguments.of(getValidUsername(), null, null, "password and email are missing"),
     )
 }
+
+fun conferencesData(): Array<Arguments> {
+    return arrayOf(
+        Arguments.of("East"),
+        Arguments.of("West"),
+        Arguments.of("east"),
+        Arguments.of("west"),
+        Arguments.of("eAst"),
+        Arguments.of("wEst"),
+    )
+}
+
+fun divisionsData(): Array<Arguments> {
+    return arrayOf(
+        Arguments.of("Atlantic"),
+        Arguments.of("atlantic"),
+        Arguments.of("atlaNtic"),
+        Arguments.of("Pacific"),
+        Arguments.of("pacific"),
+        Arguments.of("paCific"),
+        Arguments.of("Southeast"),
+        Arguments.of("southeast"),
+        Arguments.of("southeasT"),
+        Arguments.of("Central"),
+        Arguments.of("central"),
+        Arguments.of("centraL"),
+        Arguments.of("Northwest"),
+        Arguments.of("northwest"),
+        Arguments.of("norThwest"),
+        Arguments.of("Southwest"),
+        Arguments.of("southwest"),
+        Arguments.of("souThwest"),
+    )
+}
