@@ -55,4 +55,19 @@ class TeamsTest {
             { assertThat(resp.code()).isEqualTo(400) },
             { assertThat(err).isEqualTo(expectedErrorMsg) })
     }
+
+    @Feature("Getting teams list")
+    @Story("Filtering teams by conference")
+    @Tag("Positive")
+    @DisplayName("Should get only teams from div:")
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = ["Atlantic", "Pacific", "Southeast", "Central", "Northwest", "Southwest"])
+    fun getTeamsFromDivision(div: String) {
+        val resp = ApiClient.getTeams(division = div)
+        val body = resp.body()
+        assertAll(
+            { assertThat(resp.code()).isEqualTo(200) },
+            { assertThat(body?.size).isEqualTo(5) },
+            { assertThat(body?.filter { it.division != div }).isEmpty() })
+    }
 }
