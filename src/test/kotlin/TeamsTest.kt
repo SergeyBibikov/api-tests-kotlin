@@ -9,6 +9,15 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
+@Feature("Getting teams list")
+@Test
+@Tag("Negative")
+annotation class TeamsNegativeTest
+
+@Feature("Getting teams list")
+@Tag("Positive")
+annotation class TeamsPositiveTest
+
 @DisplayName("Teams endpoint tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.CONCURRENT)
@@ -16,9 +25,8 @@ class TeamsTest {
     @BeforeAll
     fun healthCheck() = waitTillServiceIsUp(30)
 
-    @Feature("Getting teams list")
     @Test
-    @Tag("Positive")
+    @TeamsPositiveTest
     @DisplayName("Should return all 30 teams if no params are provided")
     fun allTeams() {
         val resp = ApiClient.getTeams()
@@ -27,9 +35,8 @@ class TeamsTest {
             { assertThat(resp.body()?.size).isEqualTo(30) })
     }
 
-    @Feature("Getting teams list")
+    @TeamsPositiveTest
     @Story("Filtering teams by conference")
-    @Tag("Positive")
     @DisplayName("Should get only teams from conf:")
     @ParameterizedTest(name = "{0}")
     @MethodSource("$TEST_DATA_CLASSNAME#conferencesData")
@@ -43,10 +50,8 @@ class TeamsTest {
             { assertThat(body?.filter { it.conference != normalizedConf }).isEmpty() })
     }
 
-    @Test
-    @Feature("Getting teams list")
+    @TeamsNegativeTest
     @Story("Filtering teams by conference")
-    @Tag("Negative")
     @DisplayName("Should get 400 if the conference is not East or West")
     fun invalidConference() {
         val resp = ApiClient.getTeams(conference = "South")
@@ -58,9 +63,8 @@ class TeamsTest {
         )
     }
 
-    @Feature("Getting teams list")
+    @TeamsPositiveTest
     @Story("Filtering teams by division")
-    @Tag("Positive")
     @DisplayName("Should get only teams from div:")
     @ParameterizedTest(name = "{0}")
     @MethodSource("$TEST_DATA_CLASSNAME#divisionsData")
@@ -74,10 +78,8 @@ class TeamsTest {
             { assertThat(body?.filter { it.division != normalizedConf }).isEmpty() })
     }
 
-    @Feature("Getting teams list")
     @Story("Filtering teams by division")
-    @Test
-    @Tag("Negative")
+    @TeamsNegativeTest
     @DisplayName("Should get 400 if the division is not from the supported list")
     fun invalidDivision() {
         val resp = ApiClient.getTeams(division = "Northeast")
