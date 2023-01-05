@@ -32,7 +32,7 @@ class TeamsTest {
     fun allTeams() {
         val resp = ApiClient.getTeams()
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(resp.body()?.size).isEqualTo(30) })
     }
 
@@ -44,7 +44,7 @@ class TeamsTest {
         val resp = ApiClient.getTeams(name = teamName)
         val body = resp.body()
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(body?.size).isEqualTo(1) },
             { assertThat(body?.get(0)?.name).isEqualTo(teamName) })
     }
@@ -56,7 +56,7 @@ class TeamsTest {
         val resp = ApiClient.getTeams(name = teamName)
         val body = resp.body()
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(body?.size).isEqualTo(0) },
         )
     }
@@ -71,7 +71,7 @@ class TeamsTest {
         val body = resp.body()
         val normalizedConf = conf.lowercase().replaceFirstChar { it.uppercase() }
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(body?.size).isEqualTo(15) },
             { assertThat(body?.filter { it.conference != normalizedConf }).isEmpty() })
     }
@@ -84,7 +84,7 @@ class TeamsTest {
         val err = getResponseErrorMessage(resp.errorBody()?.string())
         val expectedErrorMsg = "allowed conferences are: East, West"
         assertAll(
-            { assertThat(resp.code()).isEqualTo(400) },
+            { checkResponseStatus(resp, 400) },
             { assertThat(err).isEqualTo(expectedErrorMsg) }
         )
     }
@@ -99,7 +99,7 @@ class TeamsTest {
         val body = resp.body()
         val normalizedConf = div.lowercase().replaceFirstChar { it.uppercase() }
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(body?.size).isEqualTo(5) },
             { assertThat(body?.filter { it.division != normalizedConf }).isEmpty() })
     }
@@ -112,7 +112,7 @@ class TeamsTest {
         val err = getResponseErrorMessage(resp.errorBody()?.string())
         val expectedErrorMsg = "allowed conferences are: Atlantic, Pacific, Southeast, Central, Northwest, Southwest"
         assertAll(
-            { assertThat(resp.code()).isEqualTo(400) },
+            { checkResponseStatus(resp, 400) },
             { assertThat(err).isEqualTo(expectedErrorMsg) }
         )
     }
@@ -126,7 +126,7 @@ class TeamsTest {
         val resp = ApiClient.getTeams(estYear = year)
         val body = resp.body()
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(body?.size).isEqualTo(1) },
             { assertThat(body?.get(0)?.estYear).isEqualTo(year) }
         )
@@ -142,7 +142,7 @@ class TeamsTest {
         val resp = ApiClient.getTeams(estYear = year)
         val body = resp.body()
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(body?.size).isEqualTo(2) },
             { assertThat(body?.filter { it.estYear != year }).isEmpty() }
         )
@@ -158,7 +158,7 @@ class TeamsTest {
         val resp = ApiClient.getTeams(estYear = yearWithThreeTeams)
         val body = resp.body()
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(body?.size).isEqualTo(3) },
             { assertThat(body?.filter { it.estYear != yearWithThreeTeams }).isEmpty() }
         )
@@ -172,7 +172,7 @@ class TeamsTest {
         val resp = ApiClient.getTeams(estYear = yearWithNoTeams)
         val body = resp.body()
         assertAll(
-            { assertThat(resp.code()).isEqualTo(200) },
+            { checkResponseStatus(resp, 200) },
             { assertThat(body?.size).isEqualTo(0) },
         )
     }

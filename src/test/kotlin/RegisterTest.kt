@@ -30,14 +30,16 @@ class RegisterTest {
         val password = "A" + getRandomString(8, false) + "5"
 
         val response = ApiClient.register(username, password, email)
-        assertThat(response.code()).isEqualTo(201)
+        checkResponseStatus(response, 201)
 
         val respBody = response.body()
         val receivedUserId = respBody?.userId
         val createdUser = DBClient().getUserByUsername(username)
 
-        assertThat(respBody?.message).isEqualTo("user created")
-        assertThat(receivedUserId).isEqualTo(createdUser.id)
+        assertAll(
+            { assertThat(respBody?.message).isEqualTo("user created") },
+            { assertThat(receivedUserId).isEqualTo(createdUser.id) }
+        )
     }
 
     @Feature("New user registration")
@@ -68,7 +70,7 @@ class RegisterTest {
         val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
         assertAll(
-            { assertThat(response.code()).isEqualTo(400) },
+            { checkResponseStatus(response, 400) },
             { assertThat(errorMessage).isEqualTo(expectedMessage) },
         )
     }
@@ -86,7 +88,7 @@ class RegisterTest {
         val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
         assertAll(
-            { assertThat(response.code()).isEqualTo(400) },
+            { checkResponseStatus(response, 400) },
             { assertThat(errorMessage).isEqualTo(expectedMessage) },
         )
     }
