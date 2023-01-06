@@ -32,6 +32,19 @@ class ApiClient {
                 .execute()
         }
 
+        @Step("Send POST request to /token/get")
+        fun getToken(username: String?, password: String?): Response<Token> {
+            return getBuiltClient(GetToken::class.java)
+                .get(GetTokenRequestBody(username, password))
+                .execute()
+        }
+
+        @Step("Send POST request to /token/validate")
+        fun validateToken(token: String?): Response<Unit> {
+            return getBuiltClient(ValidateToken::class.java)
+                .validate(ValidateTokenRequestBody(token))
+                .execute()
+        }
     }
 
 }
