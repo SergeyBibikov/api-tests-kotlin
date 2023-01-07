@@ -91,3 +91,19 @@ fun divisionsData(): Array<Arguments> {
         Arguments.of("souThwest"),
     )
 }
+
+fun roleAndUsername(): Array<Arguments> {
+    val getQuery = { role: String ->
+        """
+            select u.* from users u 
+                join roles r on r.id = u.roleid
+            where r.name='$role'
+        """.trimIndent()
+    }
+    val dbClient = DBClient()
+    return arrayOf(
+        Arguments.of("Admin", dbClient.getSingleUser(getQuery("Admin"))),
+        Arguments.of("Regular", dbClient.getSingleUser(getQuery("Regular"))),
+        Arguments.of("Premium", dbClient.getSingleUser(getQuery("Premium")))
+    )
+}
