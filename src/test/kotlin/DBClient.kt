@@ -13,39 +13,13 @@ data class User(
     val favPlayerId: Int?,
 )
 
-data class Role(val id: Int, val name: String)
-
 class DBClient {
     private val host = "localhost"
     private val port = "5432"
     private val dbName = "postgres"
 
-    fun getUserByUsername(username: String): User {
-        val query = "select * from users where username = '$username'"
-        return getSingleUser(query)
-    }
 
-    fun getRandomUser(): User {
-        val query = "select * from users order by RANDOM() limit 1"
-        return getSingleUser(query)
-    }
-
-    fun getRoleById(id: Int): Role {
-        getConnection().use { conn ->
-            val stmt = conn.createStatement()
-            stmt.use { s ->
-                val query = "select * from roles where id=$id"
-                val rs = s.executeQuery(query)
-                rs.use {
-                    rs.next()
-                    return Role(rs.getInt(1), rs.getString(2))
-                }
-            }
-        }
-
-    }
-
-    private fun getSingleUser(query: String): User {
+    fun getSingleUser(query: String): User {
         getConnection().use {
             val stmt = it.createStatement()
             stmt.use { s ->
