@@ -34,7 +34,8 @@ class RegisterTest {
 
         val respBody = response.body()
         val receivedUserId = respBody?.userId
-        val createdUser = DBClient().getUserByUsername(username)
+        val query = "select * from users where username = '$username'"
+        val createdUser = DBClient().getSingleUser(query)
 
         assertAll(
             { assertThat(respBody?.message).isEqualTo("user created") },
