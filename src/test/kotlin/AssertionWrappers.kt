@@ -8,3 +8,8 @@ import retrofit2.Response
 fun <T> checkResponseStatus(resp: Response<T>, expectedStatus: Int) {
     assertThat(resp.code()).isEqualTo(expectedStatus)
 }
+
+@Step("Check that {0} is {2}")
+fun <T> checkValueEquality(checkedValueName: String, actualValue: T, expectedValue: T) {
+    assertThat(actualValue).isEqualTo(expectedValue)
+}
