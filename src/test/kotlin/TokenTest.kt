@@ -26,11 +26,10 @@ class TokenTest {
 
         val resp = ApiClient.getToken(user.username, user.password)
         val (roleParsed, _, uName) = resp.body()?.token!!.split("_")
-
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(roleParsed).isEqualTo(expectedRole) },
-            { assertThat(uName).isEqualTo(user.username) }
+            { checkValueEquality("the role in token", roleParsed, expectedRole) },
+            { checkValueEquality("the username in token", uName, user.username) }
         )
     }
 }
