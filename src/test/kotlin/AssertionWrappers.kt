@@ -10,7 +10,7 @@ fun <T> checkResponseStatus(resp: Response<T>, expectedStatus: Int) {
 }
 
 @Step("Check that {0} is {2}")
-fun <T> checkValueEquality(checkedValueName: String, actualValue: T, expectedValue: T) {
+fun <T> checkValueEquality(checkedValueDefinition: String, actualValue: T, expectedValue: T) {
     assertThat(actualValue).isEqualTo(expectedValue)
 }
 
