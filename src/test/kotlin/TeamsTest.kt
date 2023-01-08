@@ -45,8 +45,9 @@ class TeamsTest {
         val body = resp.body()
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(body?.size).isEqualTo(1) },
-            { assertThat(body?.get(0)?.name).isEqualTo(teamName) })
+            { checkValueEquality("the teams array length", body?.size, 1) },
+            { checkValueEquality("the returned team's name", body?.get(0)?.name, teamName) },
+        )
     }
 
     @DisplayName("Should no teams with name Utam Jazz")
@@ -57,7 +58,7 @@ class TeamsTest {
         val body = resp.body()
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(body?.size).isEqualTo(0) },
+            { checkValueEquality("the teams array length", body?.size, 0) },
         )
     }
 
@@ -72,7 +73,7 @@ class TeamsTest {
         val normalizedConf = conf.lowercase().replaceFirstChar { it.uppercase() }
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(body?.size).isEqualTo(15) },
+            { checkValueEquality("the teams array length", body?.size, 15) },
             { assertThat(body?.filter { it.conference != normalizedConf }).isEmpty() })
     }
 
@@ -81,11 +82,11 @@ class TeamsTest {
     @DisplayName("Should get 400 if the conference is not East or West")
     fun invalidConference() {
         val resp = ApiClient.getTeams(conference = "South")
-        val err = getResponseErrorMessage(resp.errorBody()?.string())
         val expectedErrorMsg = "allowed conferences are: East, West"
+
         assertAll(
             { checkResponseStatus(resp, 400) },
-            { assertThat(err).isEqualTo(expectedErrorMsg) }
+            { checkErrorMessage(resp, expectedErrorMsg) }
         )
     }
 
@@ -100,7 +101,7 @@ class TeamsTest {
         val normalizedConf = div.lowercase().replaceFirstChar { it.uppercase() }
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(body?.size).isEqualTo(5) },
+            { checkValueEquality("the teams array length", body?.size, 5) },
             { assertThat(body?.filter { it.division != normalizedConf }).isEmpty() })
     }
 
@@ -109,11 +110,11 @@ class TeamsTest {
     @DisplayName("Should get 400 if the division is not from the supported list")
     fun invalidDivision() {
         val resp = ApiClient.getTeams(division = "Northeast")
-        val err = getResponseErrorMessage(resp.errorBody()?.string())
         val expectedErrorMsg = "allowed conferences are: Atlantic, Pacific, Southeast, Central, Northwest, Southwest"
+
         assertAll(
             { checkResponseStatus(resp, 400) },
-            { assertThat(err).isEqualTo(expectedErrorMsg) }
+            { checkErrorMessage(resp, expectedErrorMsg) }
         )
     }
 
@@ -127,7 +128,7 @@ class TeamsTest {
         val body = resp.body()
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(body?.size).isEqualTo(1) },
+            { checkValueEquality("the teams array length", body?.size, 1) },
             { assertThat(body?.get(0)?.estYear).isEqualTo(year) }
         )
 
@@ -143,7 +144,7 @@ class TeamsTest {
         val body = resp.body()
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(body?.size).isEqualTo(2) },
+            { checkValueEquality("the teams array length", body?.size, 2) },
             { assertThat(body?.filter { it.estYear != year }).isEmpty() }
         )
 
@@ -159,7 +160,7 @@ class TeamsTest {
         val body = resp.body()
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(body?.size).isEqualTo(3) },
+            { checkValueEquality("the teams array length", body?.size, 3) },
             { assertThat(body?.filter { it.estYear != yearWithThreeTeams }).isEmpty() }
         )
     }
@@ -173,7 +174,7 @@ class TeamsTest {
         val body = resp.body()
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(body?.size).isEqualTo(0) },
+            { checkValueEquality("the teams array length", body?.size, 0) },
         )
     }
 }
