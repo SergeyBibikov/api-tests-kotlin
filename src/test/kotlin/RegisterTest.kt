@@ -38,8 +38,8 @@ class RegisterTest {
         val createdUser = DBClient().getSingleUser(query)
 
         assertAll(
-            { assertThat(respBody?.message).isEqualTo("user created") },
-            { assertThat(receivedUserId).isEqualTo(createdUser.id) }
+            { checkValueEquality("the response message", respBody?.message, "user created") },
+            { checkValueEquality("the user id in response", receivedUserId, createdUser.id) },
         )
     }
 
@@ -52,9 +52,8 @@ class RegisterTest {
     fun missingReqBodyField(username: String?, password: String?, email: String?, testName: String) {
         val expectedMessage = "Username, password and email are required"
         val resp = ApiClient.register(username, password, email)
-        val err = getResponseErrorMessage(resp.errorBody()?.string())
 
-        assertThat(err).isEqualTo(expectedMessage)
+        checkErrorMessage(resp, expectedMessage)
     }
 
     @Feature("New user registration")
@@ -68,11 +67,10 @@ class RegisterTest {
         if (message != "default") expectedMessage = message
 
         val response = ApiClient.register(getValidUsername(), password, getValidEmail())
-        val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
         assertAll(
             { checkResponseStatus(response, 400) },
-            { assertThat(errorMessage).isEqualTo(expectedMessage) },
+            { checkErrorMessage(response, expectedMessage) },
         )
     }
 
@@ -86,11 +84,10 @@ class RegisterTest {
         val expectedMessage = "The email has an invalid format"
 
         val response = ApiClient.register(getValidUsername(), getValidPassword(), email)
-        val errorMessage = getResponseErrorMessage(response.errorBody()?.string())
 
         assertAll(
             { checkResponseStatus(response, 400) },
-            { assertThat(errorMessage).isEqualTo(expectedMessage) },
+            { checkErrorMessage(response, expectedMessage) },
         )
     }
 }

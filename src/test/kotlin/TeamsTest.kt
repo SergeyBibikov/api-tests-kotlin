@@ -130,7 +130,7 @@ class TeamsTest {
         assertAll(
             { checkResponseStatus(resp, 200) },
             { checkValueEquality("the teams array length", body?.size, 1) },
-            { assertThat(body?.get(0)?.estYear).isEqualTo(year) }
+            { checkValueEquality("the established year", body?.get(0)?.estYear, year) },
         )
 
     }
