@@ -33,7 +33,8 @@ class TeamsTest {
         val resp = ApiClient.getTeams()
         assertAll(
             { checkResponseStatus(resp, 200) },
-            { assertThat(resp.body()?.size).isEqualTo(30) })
+            { checkValueEquality("the teams array length", resp.body()?.size, 30) }
+        )
     }
 
     @TeamsPositiveTest
