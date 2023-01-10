@@ -107,3 +107,22 @@ fun roleAndUsername(): Array<Arguments> {
         Arguments.of("Premium", dbClient.getSingleUser(getQuery("Premium")))
     )
 }
+
+fun getTokenInvalidData(): Array<Arguments> {
+    val invalidDataMsg = "invalid username and/or password"
+    return arrayOf(
+        Arguments.of("the username is not from the DB",
+            GetTokenRequestBody("SomeName", "1234"),
+            invalidDataMsg),
+        Arguments.of("the password is invalid",
+            GetTokenRequestBody("Jack", "1234"),
+            invalidDataMsg),
+        Arguments.of("the username field is missing",
+            GetTokenRequestBody(null, "1234"),
+            "Username is a required field"),
+        Arguments.of("the password field is missing",
+            GetTokenRequestBody("Jack", null),
+            "Password is a required field"),
+
+    )
+}

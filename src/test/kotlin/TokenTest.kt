@@ -22,7 +22,7 @@ class TokenTest {
     @DisplayName("Successful token for user with role ")
     @ParameterizedTest(name = "<{0}>")
     @MethodSource("$TEST_DATA_CLASSNAME#roleAndUsername")
-    fun successfulGetTokenRequest(expectedRole: String, user: User) {
+    fun positiveGetTokenTests(expectedRole: String, user: User) {
 
         val resp = ApiClient.getToken(user.username, user.password)
         val (roleParsed, _, uName) = resp.body()?.token!!.split("_")
@@ -30,6 +30,21 @@ class TokenTest {
             { checkResponseStatus(resp, 200) },
             { checkValueEquality("the role in token", roleParsed, expectedRole) },
             { checkValueEquality("the username in token", uName, user.username) }
+        )
+    }
+    @Feature("Getting a user token")
+    @Tag("Negative")
+    @Story("Error while getting a token")
+    @DisplayName("No token in response if ")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("$TEST_DATA_CLASSNAME#getTokenInvalidData")
+    fun negativeGetTokenTests(_testName: String, reqB: GetTokenRequestBody, expectedErrorMsg: String){
+
+        val resp = ApiClient.getToken(reqB.username, reqB.password)
+
+        assertAll(
+            { checkResponseStatus(resp,400) },
+            { checkErrorMessage(resp, expectedErrorMsg) }
         )
     }
 }
