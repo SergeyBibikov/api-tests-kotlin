@@ -49,6 +49,7 @@ class RegisterTest {
     @DisplayName("Should get 400 if ")
     @ParameterizedTest(name = "{3}")
     @MethodSource("$TEST_DATA_CLASSNAME#missingFieldsData")
+    @Suppress("UNUSED_PARAMETER")
     fun missingReqBodyField(username: String?, password: String?, email: String?, testName: String) {
         val expectedMessage = "Username, password and email are required"
         val resp = ApiClient.register(username, password, email)
@@ -62,6 +63,7 @@ class RegisterTest {
     @DisplayName("Should get 400 if password ")
     @ParameterizedTest(name = "{1}")
     @MethodSource("$TEST_DATA_CLASSNAME#invalidPasswordData")
+    @Suppress("UNUSED_PARAMETER")
     fun invalidPassword(password: String, _ignore: String, message: String) {
         var expectedMessage = "The password must contain uppercase, lowercase letters and at least one number"
         if (message != "default") expectedMessage = message
@@ -80,6 +82,7 @@ class RegisterTest {
     @DisplayName("Should get 400 if email ")
     @ParameterizedTest(name = "{1}")
     @MethodSource("$TEST_DATA_CLASSNAME#invalidEmailsData")
+    @Suppress("UNUSED_PARAMETER")
     fun invalidEmail(email: String, _ignore: String) {
         val expectedMessage = "The email has an invalid format"
 

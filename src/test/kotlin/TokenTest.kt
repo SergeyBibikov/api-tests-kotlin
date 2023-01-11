@@ -40,6 +40,7 @@ class TokenTest {
     @DisplayName("No token in response if ")
     @ParameterizedTest(name = "{0}")
     @MethodSource("$TEST_DATA_CLASSNAME#getTokenInvalidData")
+    @Suppress("UNUSED_PARAMETER")
     fun negativeGetTokenTests(_testName: String, reqB: GetTokenRequestBody, expectedErrorMsg: String) {
 
         val resp = ApiClient.getToken(reqB.username, reqB.password)
@@ -59,7 +60,7 @@ class TokenTest {
     fun positiveValidateTokenTests(token: String) {
 
         val resp = ApiClient.validateToken(token)
-        
+
         assertAll(
             { checkResponseStatus(resp, 200) },
             { checkIsNull("response error msg", resp.errorBody()) },
