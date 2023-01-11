@@ -8,6 +8,7 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Token endpoints(get/validate) tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -32,19 +33,37 @@ class TokenTest {
             { checkValueEquality("the username in token", uName, user.username) }
         )
     }
+
     @Feature("Getting a user token")
     @Tag("Negative")
     @Story("Error while getting a token")
     @DisplayName("No token in response if ")
     @ParameterizedTest(name = "{0}")
     @MethodSource("$TEST_DATA_CLASSNAME#getTokenInvalidData")
-    fun negativeGetTokenTests(_testName: String, reqB: GetTokenRequestBody, expectedErrorMsg: String){
+    fun negativeGetTokenTests(_testName: String, reqB: GetTokenRequestBody, expectedErrorMsg: String) {
 
         val resp = ApiClient.getToken(reqB.username, reqB.password)
 
         assertAll(
-            { checkResponseStatus(resp,400) },
+            { checkResponseStatus(resp, 400) },
             { checkErrorMessage(resp, expectedErrorMsg) }
+        )
+    }
+
+    @Feature("Validating the user token")
+    @Tag("Positive")
+    @Story("Successfully passed validation")
+    @DisplayName("Successful validation of token ")
+    @ParameterizedTest(name = "<{0}>")
+    @ValueSource(strings = ["Admin_token_Jack", "Regular_token_Steve", "Premium_token_Mike"])
+    fun positiveValidateTokenTests(token: String) {
+
+        val resp = ApiClient.validateToken(token)
+        
+        assertAll(
+            { checkResponseStatus(resp, 200) },
+            { checkIsNull("response error msg", resp.errorBody()) },
+            { checkValueEquality("response body", resp.body(), Unit) },
         )
     }
 }

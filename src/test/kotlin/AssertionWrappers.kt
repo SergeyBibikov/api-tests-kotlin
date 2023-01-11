@@ -19,3 +19,8 @@ fun <T> checkErrorMessage(resp: Response<T>, expectedErrorMsg: String) {
     val actualError = getResponseErrorMessage(resp.errorBody()?.string())
     assertThat(actualError).isEqualTo(expectedErrorMsg)
 }
+
+@Step("Check that {0} is null")
+fun <T> checkIsNull(checkedValueDefinition: String, actualValue: T) {
+    assertThat(actualValue).isNull()
+}

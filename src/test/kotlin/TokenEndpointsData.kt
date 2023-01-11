@@ -14,6 +14,6 @@ interface GetToken {
 }
 
 interface ValidateToken {
-    @POST("/token/Validate")
+    @POST("/token/validate")
     fun validate(@Body body: ValidateTokenRequestBody): Call<Unit>
 }
