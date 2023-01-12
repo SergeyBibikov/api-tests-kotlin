@@ -126,3 +126,22 @@ fun getTokenInvalidData(): Array<Arguments> {
 
     )
 }
+
+fun validateTokenInvalidData(): Array<Arguments> {
+
+    val dbClient = DBClient()
+    val u = dbClient.getSingleUser("select * from users limit 1")
+    val role = dbClient.getRole("select * from roles where id <> ${u.roleId} limit 1")
+
+    val wrongRoleMsg = "incorrect user role"
+    val tokenFormatMsg = "incorrect token format. Proper format: role_token_username"
+    val usernameMsg = "invalid username"
+    return arrayOf(
+        Arguments.of("the user does not have this role","${role?.name}_token_${u.username}", wrongRoleMsg),
+        Arguments.of("the role does not exist","dmin_token_Jack", wrongRoleMsg),
+        Arguments.of("the username does not exist","Admin_token_1324", usernameMsg),
+        Arguments.of("underscore separates only the username","Admintoken_Jack", tokenFormatMsg),
+        Arguments.of("underscore separates only the role","Admin_tokenJack", tokenFormatMsg),
+        Arguments.of("no token provided", null, tokenFormatMsg),
+        )
+}

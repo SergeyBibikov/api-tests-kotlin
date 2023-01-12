@@ -67,4 +67,21 @@ class TokenTest {
             { checkValueEquality("response body", resp.body(), Unit) },
         )
     }
+
+    @Feature("Validating the user token")
+    @Tag("Negative")
+    @Story("Token validation is not passed")
+    @DisplayName("Validation error as ")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("$TEST_DATA_CLASSNAME#validateTokenInvalidData")
+    @Suppress("UNUSED_PARAMETER")
+    fun negativeValidateTokenTests(_testName: String, token: String?, expectedErrorMsg: String) {
+
+        val resp = ApiClient.validateToken(token)
+
+        assertAll(
+            { checkResponseStatus(resp, 401) },
+            { checkErrorMessage(resp, expectedErrorMsg)},
+        )
+    }
 }
