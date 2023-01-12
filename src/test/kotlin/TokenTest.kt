@@ -50,7 +50,7 @@ class TokenTest {
             { checkErrorMessage(resp, expectedErrorMsg) }
         )
     }
-
+    //TODO:get token data from DB
     @Feature("Validating the user token")
     @Tag("Positive")
     @Story("Successfully passed validation")
