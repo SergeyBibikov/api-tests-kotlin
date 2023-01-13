@@ -111,20 +111,40 @@ fun roleAndUsername(): Array<Arguments> {
 fun getTokenInvalidData(): Array<Arguments> {
     val invalidDataMsg = "invalid username and/or password"
     return arrayOf(
-        Arguments.of("the username is not from the DB",
+        Arguments.of(
+            "the username is not from the DB",
             GetTokenRequestBody("SomeName", "1234"),
-            invalidDataMsg),
-        Arguments.of("the password is invalid",
+            invalidDataMsg
+        ),
+        Arguments.of(
+            "the password is invalid",
             GetTokenRequestBody("Jack", "1234"),
-            invalidDataMsg),
-        Arguments.of("the username field is missing",
+            invalidDataMsg
+        ),
+        Arguments.of(
+            "the username field is missing",
             GetTokenRequestBody(null, "1234"),
-            "Username is a required field"),
-        Arguments.of("the password field is missing",
+            "Username is a required field"
+        ),
+        Arguments.of(
+            "the password field is missing",
             GetTokenRequestBody("Jack", null),
-            "Password is a required field"),
+            "Password is a required field"
+        ),
 
-    )
+        )
+}
+
+fun validateTokenValidData(): List<Arguments> {
+
+    val dbClient = DBClient()
+    val users = dbClient.getSeveralUsers("select distinct on (roleid) * from users")
+    val args: MutableList<Arguments> = mutableListOf()
+    for (u in users) {
+        val role = dbClient.getRole("select * from roles where id = ${u.roleId} limit 1")
+        args.add(Arguments.of("${role?.name}_token_${u.username}"))
+    }
+    return args
 }
 
 fun validateTokenInvalidData(): Array<Arguments> {
@@ -137,11 +157,11 @@ fun validateTokenInvalidData(): Array<Arguments> {
     val tokenFormatMsg = "incorrect token format. Proper format: role_token_username"
     val usernameMsg = "invalid username"
     return arrayOf(
-        Arguments.of("the user does not have this role","${role?.name}_token_${u.username}", wrongRoleMsg),
-        Arguments.of("the role does not exist","dmin_token_Jack", wrongRoleMsg),
-        Arguments.of("the username does not exist","Admin_token_1324", usernameMsg),
-        Arguments.of("underscore separates only the username","Admintoken_Jack", tokenFormatMsg),
-        Arguments.of("underscore separates only the role","Admin_tokenJack", tokenFormatMsg),
+        Arguments.of("the user does not have this role", "${role?.name}_token_${u.username}", wrongRoleMsg),
+        Arguments.of("the role does not exist", "dmin_token_Jack", wrongRoleMsg),
+        Arguments.of("the username does not exist", "Admin_token_1324", usernameMsg),
+        Arguments.of("underscore separates only the username", "Admintoken_Jack", tokenFormatMsg),
+        Arguments.of("underscore separates only the role", "Admin_tokenJack", tokenFormatMsg),
         Arguments.of("no token provided", null, tokenFormatMsg),
-        )
+    )
 }

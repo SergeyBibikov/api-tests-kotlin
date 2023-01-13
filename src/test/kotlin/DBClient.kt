@@ -27,31 +27,41 @@ class DBClient {
 
 
     fun getSingleUser(query: String): User {
-        return executeQuery(query){
-                    it.next()
-                    val favP = it.getInt(6)
-                    User(
-                        it.getInt(1),
-                        it.getString(2),
-                        it.getString(3),
-                        it.getString(4),
-                        it.getInt(5),
-                        if (favP == 0) null else favP,
-                    )
+        return getSeveralUsers(query)[0]
+    }
+
+    fun getSeveralUsers(query: String): List<User> {
+        val result: MutableList<User> = mutableListOf()
+        return executeQuery(query) {
+            while (it.next()) {
+                val favP = it.getInt(6)
+                val u = User(
+                    it.getInt(1),
+                    it.getString(2),
+                    it.getString(3),
+                    it.getString(4),
+                    it.getInt(5),
+                    if (favP == 0) null else favP,
+                )
+                result.add(u)
+            }
+            result
         }
     }
-    fun getRole(query: String): Role?{
-        return executeQuery(query){
+
+    fun getRole(query: String): Role? {
+        return executeQuery(query) {
             it.next()
-            try{
+            try {
                 Role(it.getInt(1), it.getString(2))
-            }catch(e: SQLException){
+            } catch (e: SQLException) {
                 println(e.message)
                 null
             }
         }
     }
-    private inline fun <T>executeQuery(query: String, processResultSet: (ResultSet)->T): T{
+
+    private inline fun <T> executeQuery(query: String, processResultSet: (ResultSet) -> T): T {
         getConnection().use {
             val stmt = it.createStatement()
             stmt.use { s ->
@@ -62,6 +72,7 @@ class DBClient {
             }
         }
     }
+
     private fun getConnection(): Connection {
         val connString = "jdbc:postgresql://${this.host}:${this.port}/${this.dbName}"
         val props = Properties()

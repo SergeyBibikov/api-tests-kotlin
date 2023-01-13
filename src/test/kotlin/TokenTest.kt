@@ -8,7 +8,6 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Token endpoints(get/validate) tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -50,13 +49,13 @@ class TokenTest {
             { checkErrorMessage(resp, expectedErrorMsg) }
         )
     }
-    //TODO:get token data from DB
+
     @Feature("Validating the user token")
     @Tag("Positive")
     @Story("Successfully passed validation")
     @DisplayName("Successful validation of token ")
     @ParameterizedTest(name = "<{0}>")
-    @ValueSource(strings = ["Admin_token_Jack", "Regular_token_Steve", "Premium_token_Mike"])
+    @MethodSource("$TEST_DATA_CLASSNAME#validateTokenValidData")
     fun positiveValidateTokenTests(token: String) {
 
         val resp = ApiClient.validateToken(token)
@@ -81,7 +80,7 @@ class TokenTest {
 
         assertAll(
             { checkResponseStatus(resp, 401) },
-            { checkErrorMessage(resp, expectedErrorMsg)},
+            { checkErrorMessage(resp, expectedErrorMsg) },
         )
     }
 }
