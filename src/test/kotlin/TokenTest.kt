@@ -1,5 +1,10 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
+import com.example.sergeybibikov.kotlin.api_tests.api.ApiClient
+import com.example.sergeybibikov.kotlin.api_tests.db.User
+import com.example.sergeybibikov.kotlin.api_tests.endpoints_data.GetTokenRequestBody
+import com.example.sergeybibikov.kotlin.api_tests.test_data.TEST_DATA_CLASSNAME
+import com.example.sergeybibikov.kotlin.api_tests.utils.*
 import io.qameta.allure.Feature
 import io.qameta.allure.Story
 import org.assertj.core.api.Assertions.*

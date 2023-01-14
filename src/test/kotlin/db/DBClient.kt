@@ -1,4 +1,4 @@
-package com.example.sergeybibikov.kotlin.api_tests
+package com.example.sergeybibikov.kotlin.api_tests.db
 
 import java.sql.Connection
 import java.sql.DriverManager

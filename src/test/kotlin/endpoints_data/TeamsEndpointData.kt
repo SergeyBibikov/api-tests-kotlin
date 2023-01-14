@@ -1,4 +1,4 @@
-package com.example.sergeybibikov.kotlin.api_tests
+package com.example.sergeybibikov.kotlin.api_tests.endpoints_data
 
 import com.google.gson.annotations.SerializedName
 import retrofit2.Call

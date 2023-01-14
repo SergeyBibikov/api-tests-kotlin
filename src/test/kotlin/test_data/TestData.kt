@@ -1,8 +1,14 @@
-package com.example.sergeybibikov.kotlin.api_tests
+package com.example.sergeybibikov.kotlin.api_tests.test_data
 
+import com.example.sergeybibikov.kotlin.api_tests.db.DBClient
+import com.example.sergeybibikov.kotlin.api_tests.endpoints_data.GetTokenRequestBody
+import com.example.sergeybibikov.kotlin.api_tests.utils.getRandomString
+import com.example.sergeybibikov.kotlin.api_tests.utils.getValidEmail
+import com.example.sergeybibikov.kotlin.api_tests.utils.getValidPassword
+import com.example.sergeybibikov.kotlin.api_tests.utils.getValidUsername
 import org.junit.jupiter.params.provider.Arguments
 
-const val TEST_DATA_CLASSNAME = "com.example.sergeybibikov.kotlin.api_tests.TestDataKt"
+const val TEST_DATA_CLASSNAME = "com.example.sergeybibikov.kotlin.api_tests.test_data.TestDataKt"
 fun successfulRegData(): Array<Arguments> {
     return arrayOf(
         Arguments.of("${getRandomString(4)}@gmail.co.uk"),

@@ -1,4 +1,4 @@
-package com.example.sergeybibikov.kotlin.api_tests
+package com.example.sergeybibikov.kotlin.api_tests.utils
 
 import io.qameta.allure.Step
 import org.assertj.core.api.Assertions.assertThat

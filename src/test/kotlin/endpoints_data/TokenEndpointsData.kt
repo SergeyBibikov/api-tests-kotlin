@@ -1,4 +1,4 @@
-package com.example.sergeybibikov.kotlin.api_tests
+package com.example.sergeybibikov.kotlin.api_tests.endpoints_data
 
 import retrofit2.Call
 import retrofit2.http.Body

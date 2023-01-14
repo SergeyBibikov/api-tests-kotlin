@@ -1,5 +1,7 @@
-package com.example.sergeybibikov.kotlin.api_tests
+package com.example.sergeybibikov.kotlin.api_tests.utils
 
+import com.example.sergeybibikov.kotlin.api_tests.api.ApiClient
+import com.example.sergeybibikov.kotlin.api_tests.api.ApiError
 import com.google.gson.Gson
 import java.net.ConnectException
 import kotlin.test.fail

@@ -1,6 +1,10 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
 
+import com.example.sergeybibikov.kotlin.api_tests.api.ApiClient
+import com.example.sergeybibikov.kotlin.api_tests.db.DBClient
+import com.example.sergeybibikov.kotlin.api_tests.test_data.*
+import com.example.sergeybibikov.kotlin.api_tests.utils.*
 import io.qameta.allure.Feature
 import io.qameta.allure.Story
 import org.assertj.core.api.Assertions.*
@@ -53,7 +57,6 @@ class RegisterTest {
     fun missingReqBodyField(username: String?, password: String?, email: String?, testName: String) {
         val expectedMessage = "Username, password and email are required"
         val resp = ApiClient.register(username, password, email)
-
         checkErrorMessage(resp, expectedMessage)
     }
 

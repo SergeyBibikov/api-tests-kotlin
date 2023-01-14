@@ -1,5 +1,6 @@
-package com.example.sergeybibikov.kotlin.api_tests
+package com.example.sergeybibikov.kotlin.api_tests.api
 
+import com.example.sergeybibikov.kotlin.api_tests.endpoints_data.*
 import com.google.gson.annotations.SerializedName
 import io.qameta.allure.Step
 import retrofit2.Response
