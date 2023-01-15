@@ -2,6 +2,7 @@ package com.example.sergeybibikov.kotlin.api_tests.utils
 
 import com.example.sergeybibikov.kotlin.api_tests.api.ApiClient
 import com.example.sergeybibikov.kotlin.api_tests.api.ApiError
+import com.example.sergeybibikov.kotlin.api_tests.db.DBClient
 import com.google.gson.Gson
 import java.net.ConnectException
 import kotlin.test.fail
@@ -47,3 +48,12 @@ fun getRandomString(stringLen: Int, lettersOnly: Boolean = true): String {
 fun getValidEmail() = getRandomString(7, false) + "@gmail.com"
 fun getValidPassword() = "A" + getRandomString(8, false) + "5"
 fun getValidUsername() = getRandomString(7)
+
+fun getAdminUserToken(): String{
+    val u = DBClient().getSingleUser("""
+        select * from users u 
+            join roles r on u.roleid = r.id
+        where r.name = 'Admin'
+    """.trimIndent())
+    return ApiClient.getToken(u.username, u.password).body()?.token ?: ""
+}

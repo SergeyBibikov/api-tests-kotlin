@@ -1,11 +1,9 @@
 package com.example.sergeybibikov.kotlin.api_tests
 
 import com.example.sergeybibikov.kotlin.api_tests.api.ApiClient
+import com.example.sergeybibikov.kotlin.api_tests.db.DBClient
 import com.example.sergeybibikov.kotlin.api_tests.test_data.TEST_DATA_CLASSNAME
-import com.example.sergeybibikov.kotlin.api_tests.utils.checkErrorMessage
-import com.example.sergeybibikov.kotlin.api_tests.utils.checkResponseStatus
-import com.example.sergeybibikov.kotlin.api_tests.utils.checkValueEquality
-import com.example.sergeybibikov.kotlin.api_tests.utils.waitTillServiceIsUp
+import com.example.sergeybibikov.kotlin.api_tests.utils.*
 import io.qameta.allure.Feature
 import io.qameta.allure.Story
 import org.assertj.core.api.Assertions.*
@@ -182,6 +180,31 @@ class TeamsTest {
         assertAll(
             { checkResponseStatus(resp, 200) },
             { checkValueEquality("the teams array length", body?.size, 0) },
+        )
+    }
+
+    @Test
+    @Feature("Team deletion")
+    @Story("Successful team deletion")
+    @DisplayName("Successful team deletion by an admin")
+    fun successfullyDeleteTeam() {
+        val teamName = "testName"
+        val i = DBClient().insert(
+            """
+            insert into 
+                teams(name, conference, division, est_year) 
+                values('$teamName', 'East', 'Atlantic', 2022)
+            returning id
+            """.trimIndent()
+        )
+
+        val token = getAdminUserToken()
+        ApiClient.deleteTeam(token, i)
+
+        val after = ApiClient.getTeams(name = teamName).body()?.size
+
+        assertAll(
+            { checkValueEquality("the teams response array length", after, 0) }
         )
     }
 }
