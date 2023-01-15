@@ -1,9 +1,6 @@
 package com.example.sergeybibikov.kotlin.api_tests.db
 
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.ResultSet
-import java.sql.SQLException
+import java.sql.*
 import java.util.*
 
 data class User(
@@ -60,7 +57,18 @@ class DBClient {
             }
         }
     }
+    fun insert(insertStms: String): Int{
+       getConnection().use {conn->
+           conn.createStatement().use {st->
+               st.execute(insertStms, Statement.RETURN_GENERATED_KEYS)
+               st.generatedKeys.use {
+                   it.next()
+                   return it.getInt(1)
+               }
 
+           }
+       }
+    }
     private inline fun <T> executeQuery(query: String, processResultSet: (ResultSet) -> T): T {
         getConnection().use {
             val stmt = it.createStatement()
