@@ -33,6 +33,11 @@ class ApiClient {
                 .execute()
         }
 
+        @Step("Send DELETE request to /teams/{1} with token {0}")
+        fun deleteTeam(token: String?,teamId: Int?): Response<Unit>{
+            return getBuiltClient(Teams::class.java).delete(token, teamId).execute()
+        }
+
         @Step("Send POST request to /token/get")
         fun getToken(username: String?, password: String?): Response<Token> {
             return getBuiltClient(GetToken::class.java)
@@ -46,6 +51,8 @@ class ApiClient {
                 .validate(ValidateTokenRequestBody(token))
                 .execute()
         }
+
+
     }
 
 }
