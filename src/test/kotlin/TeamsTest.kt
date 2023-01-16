@@ -198,13 +198,27 @@ class TeamsTest {
             """.trimIndent()
         )
 
-        val token = getAdminUserToken()
+        val token = getUserTokenWithRole("Admin")
         ApiClient.deleteTeam(token, i)
 
         val after = ApiClient.getTeams(name = teamName).body()?.size
 
         assertAll(
             { checkValueEquality("the teams response array length", after, 0) }
+        )
+    }
+
+    @Feature("Team deletion")
+    @Story("Unsuccessful team deletion attempt")
+    @DisplayName("Cannot delete team if ")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("$TEST_DATA_CLASSNAME#invalidTeamDeletion")
+    fun negativeDeleteTeamCases(testName: String, token: String?, teamId: Int?, expectedMsg: String?) {
+        val resp = ApiClient.deleteTeam(token, teamId)
+        
+        assertAll(
+            { checkValueEquality("the teams response array length", ApiClient.getTeams().body()?.size, 30) },
+            { checkErrorMessage(resp, expectedMsg) }
         )
     }
 }

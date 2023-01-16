@@ -1,11 +1,9 @@
 package com.example.sergeybibikov.kotlin.api_tests.test_data
 
+import com.example.sergeybibikov.kotlin.api_tests.api.ApiClient
 import com.example.sergeybibikov.kotlin.api_tests.db.DBClient
 import com.example.sergeybibikov.kotlin.api_tests.endpoints_data.GetTokenRequestBody
-import com.example.sergeybibikov.kotlin.api_tests.utils.getRandomString
-import com.example.sergeybibikov.kotlin.api_tests.utils.getValidEmail
-import com.example.sergeybibikov.kotlin.api_tests.utils.getValidPassword
-import com.example.sergeybibikov.kotlin.api_tests.utils.getValidUsername
+import com.example.sergeybibikov.kotlin.api_tests.utils.*
 import org.junit.jupiter.params.provider.Arguments
 
 const val TEST_DATA_CLASSNAME = "com.example.sergeybibikov.kotlin.api_tests.test_data.TestDataKt"
@@ -169,5 +167,20 @@ fun validateTokenInvalidData(): Array<Arguments> {
         Arguments.of("underscore separates only the username", "Admintoken_Jack", tokenFormatMsg),
         Arguments.of("underscore separates only the role", "Admin_tokenJack", tokenFormatMsg),
         Arguments.of("no token provided", null, tokenFormatMsg),
+    )
+}
+
+fun invalidTeamDeletion(): Array<Arguments> {
+    val role = "Regular"
+    val regularToken = getUserTokenWithRole(role)
+    val adminToken = getUserTokenWithRole("Admin")
+    val teamId = ApiClient.getTeams().body()?.get(0)?.id
+    val invalidId = 100
+    val formatMsg = "incorrect token format. Proper format: role_token_username"
+    return arrayOf(
+        Arguments.of("the user has role $role", regularToken, teamId, "user is not an admin"),
+        Arguments.of("the token is not valid", "Sometoken", teamId, formatMsg),
+        Arguments.of("the token is missing", "", teamId, formatMsg),
+        Arguments.of("no team with id $invalidId", adminToken, invalidId, null),
     )
 }

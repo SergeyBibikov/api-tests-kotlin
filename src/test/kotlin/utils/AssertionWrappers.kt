@@ -17,7 +17,7 @@ fun <T> checkValueEquality(checkedValueDefinition: String, actualValue: T, expec
 }
 
 @Step("Check the response error message")
-fun <T> checkErrorMessage(resp: Response<T>, expectedErrorMsg: String) {
+fun <T> checkErrorMessage(resp: Response<T>, expectedErrorMsg: String?) {
     val actualError = getResponseErrorMessage(resp.errorBody()?.string())
     assertThat(actualError).isEqualTo(expectedErrorMsg)
 }

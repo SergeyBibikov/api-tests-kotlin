@@ -49,11 +49,13 @@ fun getValidEmail() = getRandomString(7, false) + "@gmail.com"
 fun getValidPassword() = "A" + getRandomString(8, false) + "5"
 fun getValidUsername() = getRandomString(7)
 
-fun getAdminUserToken(): String{
-    val u = DBClient().getSingleUser("""
+fun getUserTokenWithRole(role: String): String {
+    val u = DBClient().getSingleUser(
+        """
         select * from users u 
             join roles r on u.roleid = r.id
-        where r.name = 'Admin'
-    """.trimIndent())
+        where r.name = '$role'
+    """.trimIndent()
+    )
     return ApiClient.getToken(u.username, u.password).body()?.token ?: ""
 }
