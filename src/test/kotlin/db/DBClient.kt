@@ -1,5 +1,9 @@
 package com.example.sergeybibikov.kotlin.api_tests.db
 
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.*
 import java.util.*
 
@@ -17,11 +21,38 @@ data class Role(
     val name: String
 )
 
+object RoleT : IntIdTable() {
+    val name = varchar("name", 100)
+}
+
+object UserT : IntIdTable("users") {
+    val username = varchar("username", 100)
+    val email = varchar("email", 100)
+    val password = varchar("password", 100)
+    val roleid = integer("roleid").references(RoleT.id)
+    val favPlayerId = integer("fav_playerid").nullable()
+    val favTeamId = integer("fav_teamid").nullable()
+}
+
 class DBClient {
     private val host = "localhost"
     private val port = "5432"
     private val dbName = "postgres"
 
+    fun tryExposed() {
+        Database.connect(
+            "jdbc:postgresql://${this.host}:${this.port}/${this.dbName}",
+            driver = "org.postgresql.Driver",
+            user = "postgres",
+            password = System.getenv("DBPass")
+        )
+
+        transaction {
+            UserT.selectAll().forEach {
+                println("${it[UserT.id]}: ${it[UserT.username]}")
+            }
+        }
+    }
 
     fun getSingleUser(query: String): User {
         return getSeveralUsers(query)[0]
@@ -57,18 +88,20 @@ class DBClient {
             }
         }
     }
-    fun insert(insertStms: String): Int{
-       getConnection().use {conn->
-           conn.createStatement().use {st->
-               st.execute(insertStms, Statement.RETURN_GENERATED_KEYS)
-               st.generatedKeys.use {
-                   it.next()
-                   return it.getInt(1)
-               }
 
-           }
-       }
+    fun insert(insertStms: String): Int {
+        getConnection().use { conn ->
+            conn.createStatement().use { st ->
+                st.execute(insertStms, Statement.RETURN_GENERATED_KEYS)
+                st.generatedKeys.use {
+                    it.next()
+                    return it.getInt(1)
+                }
+
+            }
+        }
     }
+
     private inline fun <T> executeQuery(query: String, processResultSet: (ResultSet) -> T): T {
         getConnection().use {
             val stmt = it.createStatement()
