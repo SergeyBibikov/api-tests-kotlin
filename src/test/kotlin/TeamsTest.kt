@@ -222,9 +222,4 @@ class TeamsTest {
             { checkErrorMessage(resp, expectedMsg) }
         )
     }
-
-    @Test
-    fun debug() {
-        DBClient().tryExposed()
-    }
 }

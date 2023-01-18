@@ -15,9 +15,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.23.1")
     testImplementation("io.qameta.allure:allure-assertj:2.20.1")
     testImplementation("io.qameta.allure:allure-junit5:2.20.1")
-    testImplementation("org.jetbrains.exposed:exposed-core:0.41.1")
     testImplementation("org.postgresql:postgresql:42.5.1")
-    testImplementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
 
 }
 
